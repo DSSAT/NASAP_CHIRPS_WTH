@@ -3,7 +3,7 @@ Routines to download weather data from the NASA POWER application and merge with
 
 These routines are intended to first download weather data from the NASA POWER application (NASAP.py),
 and secondly, to merge the NASA POWER data with CHIRPS dataset in a DSSAT output format (DSSAT_WTH.py).
-See "Test" directory for an example of input files (CHIRPS files not included).
+See "Test.zip" for an example of input files (CHIRPS files not included).
 
 Inputs:
 1. A plain text file (.TXT) with three columns: "ID", "Latitude", and "Longitude"
