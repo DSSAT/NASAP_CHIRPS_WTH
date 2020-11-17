@@ -1,15 +1,15 @@
+#!/usr/bin/env python
 #-------------------------------------------------------------------------------
-# Name:        DSSAT
-# Purpose:     To create weather files in DSSAT format
-#
+# Name:        DSSAT_WTH.py
+# Purpose:     To create weather files in DSSAT format. This version uses the native grid size of nasap to create the 5-arc min points.
+#              Dataframes for CHIRPS and NASAP must be provided.
 # Author:      Oscar Castillo
 #              ocastilloromero@ufl.edu
-# Created:     17/01/2020
-# Copyright:   (c) ocastilloromero 2020
-# Licence:     University of Florida
-# Runs in Python 3.7
+# Created:     11/01/2020
+# Runs in Python 3.8.5
 # Example:
-# nasachirps("E:\\Test\\NASAP", "E:\\Test\\CHIRPS_in", "E:\\Test\\XYPoints.shp")
+# nasachirps(in_file, nasap_file, chirps_file, out_dir, NASAP_ID = "nasapid", ID = "ID")
+# nasachirps("C:\\Work\\Test\\XYpoints.csv", "C:\\Work\\Test\\Output\\dfNASAP.pkl", "C:\\Work\\Test\\Output\\dfCHIRPS.pkl", "C:\\Work\\Test\\Output")
 #-------------------------------------------------------------------------------
 
 import os
@@ -17,58 +17,13 @@ from osgeo import gdal, ogr
 import joblib
 import struct
 import pandas as pd
+import numpy as np
 import more_itertools as mit
+from datetime import datetime, timedelta
 
-def chirps(in_dir, shp, ID_name):
+def qc(input_dir, out_dir):
 
-    ds=ogr.Open(shp)
-    lyr=ds.GetLayer()
-
-    CellID = []
-
-    for feat in lyr:
-        ID = feat.GetField(ID_name)
-        CellID.append(ID)
-
-    df = pd.DataFrame()
-    df[ID_name] = CellID
-    df_chirps = df.set_index(ID_name)
-
-    for chirps_file in os.listdir(in_dir):
-        if chirps_file.endswith(".tif"):
-            chirps_fname = chirps_file[-14:-4].replace(".", "")
-            img1_ds = gdal.Open(in_dir + "\\" + chirps_file)
-            gt = img1_ds.GetGeoTransform()
-            rb = img1_ds.GetRasterBand(1)
-
-            ds=ogr.Open(shp)
-            lyr=ds.GetLayer()
-
-            pixelv = []
-
-            for feat in lyr:
-                pt = feat.geometry()
-                x = pt.GetX()
-                y = pt.GetY()
-
-                geom = feat.GetGeometryRef()
-                mx,my = geom.GetX(), geom.GetY()
-
-                px = int((mx - gt[0]) / gt[1])
-                py = int((my - gt[3]) / gt[5])
-
-                val=rb.ReadAsArray(px,py,1,1)
-                z = val[0].tolist()
-                pixelv.append(z[0])
-
-        df_chirps[chirps_fname] = pixelv
-
-    return df_chirps
-
-def qc(input_dir):
-
-    os.chdir(input_dir)
-    output_dir = os.path.dirname(input_dir) + "\\DSSAT"
+    output_dir = out_dir + "\\DSSAT"
 
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
@@ -83,7 +38,7 @@ def qc(input_dir):
 
     for wth_file in os.listdir(input_dir):
         if wth_file.endswith(".WTH"):
-            with open(wth_file, "r") as f1:
+            with open(input_dir + "\\" + wth_file, "r") as f1:
                 c_srad = 0
                 c_tmax = 0
                 c_tmin = 0
@@ -103,7 +58,7 @@ def qc(input_dir):
 
                     solar.append(round(float(SRAD), 1))
 
-                    if SRAD == "-99" or SRAD == "-99.0":
+                    if SRAD == "-99" or SRAD == "-99.0" or SRAD == "nan" or SRAD == "-3596.4":
                         c_srad += 1
 
                         date_srad.append(int(DATE))
@@ -157,70 +112,100 @@ def qc(input_dir):
                     RHUM2 = field2.split()[5]
                     WIND2 = field2.split()[6]
                     TDEW2 = field2.split()[7]
-                    PAR2 = field2.split()[8]
+                    #PAR2 = field2.split()[8]
 
-                    f2.write('{:>5} {:>5} {:>5} {:>5} {:>5} {:>5} {:>5} {:>5} {:>4}'.format(DATE2, SRAD2, TMAX2, TMIN2, RAIN2, RHUM2, WIND2, TDEW2, PAR2))
+                    f2.write('{:>5} {:>5} {:>5} {:>5} {:>5} {:>5} {:>6} {:>5}'.format(DATE2, SRAD2, TMAX2, TMIN2,
+                                                                                            RAIN2, RHUM2, WIND2, TDEW2))
                     f2.write("\n")
 
+def nasaconv(df):
 
-def nasachirps(in_fileNP, in_dir, shp, NASAP_ID = "ID", ID = "ID"):
+    # Conversion units [W.m-2] to [MJ.m-2.day-1].   SRAD
+    df["ALLSKY_SFC_SW_DWN"] = df["ALLSKY_SFC_SW_DWN"] * 86400 / 1000000
 
-    out_file = os.path.dirname(in_fileNP) + "\\DSSAT0"
+    # Conversion units [K] to [C].   TMAX, TMIN, and TDEW
+    df["T2M_MAX"] = df["T2M_MAX"] - 273.15
+    df["T2M_MIN"] = df["T2M_MIN"] - 273.15
+    df["T2MDEW"] = df["T2MDEW"] - 273.15
 
+    # Conversion units [kg.m-2.s-1] to [mm].   RAIN
+    df["PRECTOTCORR"] = 86400 * df["PRECTOTCORR"]
+
+    # Conversion units [m.s-1] to [km.day-1].   WIND
+    df["WS2M"] = 86.4 * df["WS2M"]
+
+    nasaptime = []
+    for i in df["time"]:
+        sdate = datetime.fromtimestamp(datetime.timestamp(i)).date().strftime('%y%j')
+        nasaptime.append(sdate)
+
+    df.insert(loc=4, column='time2', value=nasaptime)
+
+def nasachirps(in_file, nasap_file, chirps_file, out_dir, NASAP_ID = "nasapid", ID = "ID"):
+
+    out_file = out_dir + "\\DSSAT0"
     if not os.path.exists(out_file):
         os.mkdir(out_file)
     else:
-        print("Directory " , out_file ,  " already exists. Data will be overwritten")
+        print("Directory ", out_file, " already exists. Data will be overwritten")
 
-    driver = ogr.GetDriverByName("ESRI Shapefile")
-    dataSource = driver.Open(shp, 0)
-    layer = dataSource.GetLayer()
+    df1 = joblib.load(chirps_file)
+    d = df1.columns.values.tolist()
+    df2 = joblib.load(nasap_file)
+
+    nasaconv(df2)
+
     hdr1 = "*WEATHER DATA\n\n"
+    hdr2 = '{:>6} {:>10} {:>11} {:>10} {:>5} {:>5} {:>5} {:>5}'.format("@ INSI", "LAT", "LONG", "ELEV", "TAV", "AMP", "REFHT", "WNDHT" + "\n")
+    hdr4 = '{:>5} {:>5} {:>5} {:>5} {:>5} {:>5} {:>6} {:>6}'.format("@DATE", "SRAD", "TMAX", "TMIN", "RAIN", "RHUM", "WIND", "TDEW" + "\n")
 
-    df = chirps(in_dir, shp, "ID")
+    pt = pd.read_csv(in_file)
 
-    for feature in layer:
-        npid = feature.GetField(NASAP_ID)
-        input_id = feature.GetField(ID)
-        with open(in_fileNP + "\\" + str(npid) + ".txt", "r") as f1:
-            with open(out_file + "\\" + str(feature.GetField(ID)) + ".WTH", "w") as f2:
-                f2.write(hdr1)
-                f2.write('{:>6} {:>8} {:>8} {:>7} {:>5} {:>5} {:>5} {:>5}'.format("@ INSI", "LAT", "LONG", "ELEV", "TAV", "AMP", "REFHT", "WNDHT" + "\n"))
+    for ind in pt.index:
+        input_id = pt[ID][ind]
+        npid = pt[NASAP_ID][ind]
+        LAT = round(pt['Latitude'][ind], 5)
+        LONG = round(pt['Longitude'][ind], 5)
 
-                data = [line for line in f1.readlines() if line.strip()]
+        NASAPval = df2.loc[(df2[ID] == npid)]
 
-                LAT = data[11].split()[1]
-                LONG = data[11].split()[2]
-                ELEV = data[11].split()[3]
-                WNDHT = data[11].split()[5]
+        tavg1 = (NASAPval['T2M_MIN'] + NASAPval['T2M_MAX']) / 2
+        NASAPval.insert(loc=12, column='tavg', value=tavg1)
 
-                f2.write('{:>6} {:>8} {:>8} {:>7} {:>5} {:>5} {:>5} {:>6}'.format("UFL", LAT, LONG, ELEV, "", "", "", WNDHT + "\n"))
-                f2.write('{:>5} {:>5} {:>5} {:>5} {:>5} {:>5} {:>6} {:>5} {:>5}'.format("@DATE", "SRAD", "TMAX", "TMIN", "RAIN", "RHUM", "WIND", "TDEW", "PAR" + "\n"))
+        dfmonthly = NASAPval.resample('M', on='time').mean()
+        TAV = round(dfmonthly["tavg"].mean(), 1)
+        AMP = round(dfmonthly["tavg"].max() - dfmonthly["tavg"].min(), 1)
 
-                values = df.loc[input_id, :].values.tolist()
+        with open(out_file + "\\" + str(input_id) + ".WTH", "w") as f1:
 
-                for index, field in enumerate(data[13:]):
-                    DATE = field.split()[0]
-                    SRAD = round(float(field.split()[8]), 1)
-                    TMAX = round(float(field.split()[1]), 1)
-                    TMIN = round(float(field.split()[4]), 1)
+            f1.write(hdr1)
+            f1.write(hdr2)
+            f1.write('{:>6} {:>10} {:>11} {:>10} {:>5} {:>5} {:>5} {:>5}'.format("UFL", LAT, LONG, "", TAV, AMP, "2.0",
+                                                                              "2.0") + "\n")
+            f1.write(hdr4)
 
-                    RAIN_CHIRPS = round(values[index], 1)
+            for index, row in NASAPval.iterrows():
+                DATE = row['time2']
+                SRAD = round(row['ALLSKY_SFC_SW_DWN'], 1)
+                TMAX = round(row['T2M_MAX'], 1)
+                TMIN = round(row['T2M_MIN'], 1)
+                RHUM = round(row['RH2M'], 1)
+                WIND = round(row['WS2M'], 1)
+                TDEW = round(row['T2MDEW'], 1)
+
+                dat = datetime.fromtimestamp(datetime.timestamp(row['time'])).date().strftime('%Y%m%d')
+
+                if dat in d:
+                    RAIN_CHIRPS = round(df1.loc[input_id, dat], 1)
                     if RAIN_CHIRPS == -9999.0:
-                        RAIN = round(float(field.split()[5]), 1)
+                        RAIN = round(row['PRECTOTCORR'], 1)
                     else:
                         RAIN = RAIN_CHIRPS
+                else:
+                    RAIN = round(row['PRECTOTCORR'], 1)
 
-                    RHUM = round(float(field.split()[2]), 1)
-                    WIND = round(float(field.split()[7])*86.4, 1)
-                    TDEW = round(float(field.split()[6]), 1)
-                    PAR = -99
+                f1.write('{:>5} {:>5} {:>5} {:>5} {:>5} {:>5} {:>6} {:>5}'.format(DATE, SRAD, TMAX, TMIN, RAIN,
+                                                                                       RHUM, WIND, TDEW))
+                f1.write("\n")
 
-                    my_list = [DATE, SRAD, TMAX, TMIN, RAIN, RHUM, WIND, TDEW, PAR]
-                    f2.write('{:>5} {:>5} {:>5} {:>5} {:>5} {:>5} {:>6} {:>5} {:>4}'.format(DATE, SRAD, TMAX, TMIN, RAIN, RHUM, WIND, TDEW, PAR))
-                    f2.write("\n")
-
-    layer.ResetReading()
-
-    qc(out_file)
-
+    qc(out_file, out_dir)
