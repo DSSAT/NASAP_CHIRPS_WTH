@@ -1,24 +1,21 @@
 # NASAP_CHIRPS_WTH
-Routines to download weather data from the NASA POWER application and merge with CHIRPS dataset to produce WTH files.
+Routines to download weather data from the NASA POWER application and merge with CHIRPS dataset to produce WTH files. WTH files are the native format input for DSSAT.
 
-These routines are intended to first download weather data from the NASA POWER application (NASAP.py),
-and secondly, to merge the NASA POWER data with CHIRPS dataset in a DSSAT output format (DSSAT_WTH.py).
-See "Test.zip" for an example of input files (CHIRPS files not included).
+These routines are intended to download weather data from the NASA POWER application using OPeNDAP (NP.py),
+and then merge the NASA POWER data with CHIRPS data in a DSSAT output format (DSSAT_WTH.py).
+See "Test_input.zip" for an example of input files (CHIRPS files are not included).
 
 Inputs:
-1. A plain text file (.TXT) with three columns: "ID", "Latitude", and "Longitude"
-2. A point shapefile containing the attributes in the plain text file.
-3. A directory with the CHIRPS files.
+1. A CSV file (.CSV) with the following columns: "ID", "Latitude", "Longitude", "nasapid", "LatNP", and "LonNP"
+2. A directory with the CHIRPS files.
 
 Outputs:
-1. "NASAP" directory
-2. "DSSAT0" directory
-3. "DSSAT" directory
+1. "DSSAT0" directory: WTH files without quality control for missing values.
+2. "DSSAT" directory: WTH files with quality control.
+3. "dfNASAP.pkl": Python dataframe with the NASA POWER data.
+4. "dfCHIRPS.pkl": Python dataframe with the CHIRPS data.
+5. "XY_Points.shp" dataset: Point-vector file of the input CSV file.
 
-Notes:
+How to run:
+Create and configure the input files and directories in the "WTH_main.py" file and then run it.
 
-"NASAP.py" runs in Python 2.7
-
-"DSSAT_WTH.py" runs in Python 3.7
-
-In later versions the "NASAP.py" will be upgraded to Python 3.
