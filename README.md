@@ -18,4 +18,4 @@ Outputs:
 
 How to run:
 Create and configure the input files and directories in the "WTH_main.py" file and then run it.
-
+Application runs on Python 3.8.5 version. It is tested in Windows OS environment.
