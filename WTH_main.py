@@ -20,7 +20,7 @@ in_file = "C:\\Work\\Test\\XYpoints.csv"
 ID = "ID"
 NASAP_ID = "nasapid"
 in_chirps = "C:\\Work\\Test\\in_chirps"
-sy, sm, sd, ey, em, ed = [2020, 10, 29, 2020, 10, 31]
+sy, sm, sd, ey, em, ed = (2020, 10, 29, 2020, 10, 31)
 out_dir = "C:\\Work\\Test\\Output"
 
 if __name__=='__main__':
