@@ -11,7 +11,7 @@
 import os
 import shutil
 
-#Sample
+#Example
 #in_dir1 = r"C:\Test_output\DSSAT1" #First directory
 #in_dir2 = r"C:\Test_output\DSSAT2" #Second directory to append to the first directory
 #out_dir = r"C:\Test_output\DSSAT3" #Output directory
