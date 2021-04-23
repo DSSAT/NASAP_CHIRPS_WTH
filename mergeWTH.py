@@ -12,9 +12,9 @@ import os
 import shutil
 
 #Sample
-in_dir1 = r"C:\Users\oscar\Documents\Work\NASAPCHIRPS\NASAP_CHIRPS_WTH-develop\Test_output\DSSAT1" #First directory
-in_dir2 = r"C:\Users\oscar\Documents\Work\NASAPCHIRPS\NASAP_CHIRPS_WTH-develop\Test_output\DSSAT2" #Second directory to append to the first directory
-out_dir = r"C:\Users\oscar\Documents\Work\NASAPCHIRPS\NASAP_CHIRPS_WTH-develop\Test_output\DSSAT3" #Output directory
+#in_dir1 = r"C:\Test_output\DSSAT1" #First directory
+#in_dir2 = r"C:\Test_output\DSSAT2" #Second directory to append to the first directory
+#out_dir = r"C:\Test_output\DSSAT3" #Output directory
 
 def mergeWTH(in_dir1, in_dir2, out_dir):
     if not os.path.exists(out_dir):
