@@ -9,7 +9,7 @@
 # Runs in Python 3.8.5
 # Example:
 # nasachirps(in_file, nasap_file, chirps_file, out_dir, NASAP_ID = "nasapid", ID = "ID")
-# nasachirps("C:\\Work\\Test\\XYpoints.csv", "C:\\Work\\Test\\Output\\dfNASAP.pkl", "C:\\Work\\Test\\Output\\dfCHIRPS.pkl", "C:\\Work\\Test\\Output")
+# nasachirps("C:/Work/Test/XYpoints.csv", "C:/Work/Test/Output/dfNASAP.pkl", "C:/Work/Test/Output/dfCHIRPS.pkl", "C:/Work/Test/Output")
 #-------------------------------------------------------------------------------
 
 import os
@@ -23,7 +23,7 @@ from datetime import datetime, timedelta
 
 def qc(input_dir, out_dir):
 
-    output_dir = out_dir + "\\DSSAT"
+    output_dir = out_dir + "/DSSAT"
 
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
@@ -38,7 +38,7 @@ def qc(input_dir, out_dir):
 
     for wth_file in os.listdir(input_dir):
         if wth_file.endswith(".WTH"):
-            with open(input_dir + "\\" + wth_file, "r") as f1:
+            with open(input_dir + "/" + wth_file, "r") as f1:
                 c_srad = 0
                 c_tmax = 0
                 c_tmin = 0
@@ -83,7 +83,7 @@ def qc(input_dir, out_dir):
             m_tmin.append(c_tmin)
             m_rain.append(c_rain)
 
-            with open(output_dir + "\\" + wth_file, "w") as f2:
+            with open(output_dir + "/" + wth_file, "w") as f2:
                 f2.writelines(data[0:5])
 
                 for index2, field2 in enumerate(data[5:]):
@@ -143,7 +143,7 @@ def nasaconv(df):
 
 def nasachirps(in_file, nasap_file, chirps_file, out_dir, NASAP_ID = "nasapid", ID = "ID"):
 
-    out_file = out_dir + "\\DSSAT0"
+    out_file = out_dir + "/DSSAT0"
     if not os.path.exists(out_file):
         os.mkdir(out_file)
     else:
@@ -176,7 +176,7 @@ def nasachirps(in_file, nasap_file, chirps_file, out_dir, NASAP_ID = "nasapid", 
         TAV = round(dfmonthly["tavg"].mean(), 1)
         AMP = round(dfmonthly["tavg"].max() - dfmonthly["tavg"].min(), 1)
 
-        with open(out_file + "\\" + str(input_id) + ".WTH", "w") as f1:
+        with open(out_file + "/" + str(input_id) + ".WTH", "w") as f1:
 
             f1.write(hdr1)
             f1.write(hdr2)

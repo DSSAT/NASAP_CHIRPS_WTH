@@ -26,13 +26,13 @@ def mergeWTH(in_dir1, in_dir2, out_dir):
         if wth_file1.endswith(".WTH"):
             if wth_file1 in wth_dir2:
                 #To make a copy of the first file
-                shutil.copy(in_dir1 + "\\" + wth_file1, out_dir + "\\" + wth_file1)
+                shutil.copy(in_dir1 + "/" + wth_file1, out_dir + "/" + wth_file1)
                 #To open a second file
-                with open(in_dir2 + "\\" + wth_file1, "r") as wth2:
+                with open(in_dir2 + "/" + wth_file1, "r") as wth2:
                     data2 = [line for line in wth2.readlines() if line.strip()][4:]
 
                 #To open the copied file and append the second file
-                with open(out_dir + "\\" + wth_file1, "r+") as wth1:
+                with open(out_dir + "/" + wth_file1, "r+") as wth1:
                     data1 = [line for line in wth1.readlines() if line.strip()]
                     wth1.writelines(data2)
             else:

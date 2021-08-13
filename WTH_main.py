@@ -16,12 +16,12 @@ from CHIRPS import chirps
 from DSSAT_WTH import nasachirps
 import os
 
-in_file = "C:\\Work\\Test\\XYpoints.csv"
+in_file = "C:/Work/Test/XYpoints.csv"
 ID = "ID"
 NASAP_ID = "nasapid"
-in_chirps = "C:\\Work\\Test\\in_chirps"
+in_chirps = "C:/Work/Test/in_chirps"
 sy, sm, sd, ey, em, ed = [2020, 10, 29, 2020, 10, 31]
-out_dir = "C:\\Work\\Test\\Output"
+out_dir = "C:/Work/Test/Output"
 
 if __name__=='__main__':
     if not os.path.exists(out_dir):
@@ -32,8 +32,8 @@ if __name__=='__main__':
     p2.start()
     p1.join()
     p2.join()
-    nasap_file = out_dir + "\\dfNASAP.pkl"
-    chirps_file = out_dir + "\\dfCHIRPS.pkl"
+    nasap_file = out_dir + "/dfNASAP.pkl"
+    chirps_file = out_dir + "/dfCHIRPS.pkl"
     p3 = Process(target=nasachirps, args=(in_file, nasap_file, chirps_file, out_dir))
     p3.start()
     p3.join()

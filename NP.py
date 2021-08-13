@@ -12,7 +12,7 @@
 #Columns of the CSV file:
 #ID,Latitude,Longitude, nasapid, LatNP, LonNP
 #nasap_gen(in_file, out_dir, sy, sm, sd, ey, em, ed, NASAP_ID = "nasapid")
-#nasap_gen("C:\\Work\\Test\\XYpoints.csv", "C:\\Work\\Test\\Output", 2020, 10, 29, 2020, 10, 31)
+#nasap_gen("C:/Work/Test/XYpoints.csv", "C:/Work/Test/Output", 2020, 10, 29, 2020, 10, 31)
 #-------------------------------------------------------------------------------
 
 from concurrent.futures import ThreadPoolExecutor, wait
@@ -69,7 +69,7 @@ def nasap_point(ycoord, xcoord, sy, sm, sd, ey, em, ed):
 def nasap_gen(in_file, out_dir, sy, sm, sd, ey, em, ed, NASAP_ID = "nasapid"):
 
     ndays = (datetime(ey, em, ed) - datetime(sy, sm, sd)).days + 1
-    df_out = out_dir + "\\dfNASAP.pkl"
+    df_out = out_dir + "/dfNASAP.pkl"
 
     if os.path.isfile(df_out):
         print("The", df_out, "file already exists. This file will be used.")
@@ -86,7 +86,7 @@ def nasap_gen(in_file, out_dir, sy, sm, sd, ey, em, ed, NASAP_ID = "nasapid"):
         df, y, x = nasap_point(lat, lon, sy, sm, sd, ey, em, ed)
         id_vec = [Id] * ndays
         df.insert(loc=0, column=NASAP_ID, value=id_vec)
-        df.to_csv(out_dir + "\\" + "{}.txt".format(Id), index=False, sep='\t')
+        df.to_csv(out_dir + "/" + "{}.txt".format(Id), index=False, sep='\t')
     else:
         Id = pt.loc[:, NASAP_ID]
         lat = pt.loc[:,"LatNP"]

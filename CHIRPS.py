@@ -8,7 +8,7 @@
 # Runs in Python 3.8.5
 # Example:
 # chirps(in_chirps, in_file, out_dir, ID = "ID")
-# chirps("C:\\Work\\Test\\in_chirps", "C:\\Work\\Test\\XYpoints.csv", "C:\\Work\\Test\\Output")
+# chirps("C:/Work/Test/in_chirps", "C:/Work/Test/XYpoints.csv", "C:/Work/Test/Output")
 #-------------------------------------------------------------------------------
 
 import os
@@ -21,7 +21,7 @@ import datetime
 
 def csv_shp(in_file, out_dir):
 
-    out_shp = out_dir + "\\XY_Points.shp"
+    out_shp = out_dir + "/XY_Points.shp"
     driver = ogr.GetDriverByName("ESRI Shapefile")
 
     if os.path.exists(out_shp):
@@ -62,14 +62,14 @@ def csv_shp(in_file, out_dir):
 
 def chirps(in_chirps, in_file, out_dir, ID = "ID"):
 
-    df_out = out_dir + "\\dfCHIRPS.pkl"
+    df_out = out_dir + "/dfCHIRPS.pkl"
 
     if os.path.isfile(df_out):
         print("The", df_out, "file already exists. It will be used.")
         return
 
     csv_shp(in_file, out_dir)
-    shp = out_dir + "\\XY_Points.shp"
+    shp = out_dir + "/XY_Points.shp"
 
     ds=ogr.Open(shp)
     lyr=ds.GetLayer()
@@ -87,7 +87,7 @@ def chirps(in_chirps, in_file, out_dir, ID = "ID"):
     for chirps_file in os.listdir(in_chirps):
         if chirps_file.endswith(".tif"):
             chirps_fname = chirps_file[-14:-4].replace(".", "")
-            img1_ds = gdal.Open(in_chirps + "\\" + chirps_file)
+            img1_ds = gdal.Open(in_chirps + "/" + chirps_file)
             gt = img1_ds.GetGeoTransform()
             rb = img1_ds.GetRasterBand(1)
 
