@@ -121,7 +121,7 @@ def qc(input_dir, out_dir):
 def nasaconv(df):
 
     # Conversion units [W.m-2] to [MJ.m-2.day-1].   SRAD
-    df["ALLSKY_SFC_SW_DWN"] = df["ALLSKY_SFC_SW_DWN"] * 86400 / 1000000
+    df["WS10M"] = df["WS10M"] * 86400 / 1000000
 
     # Conversion units [K] to [C].   TMAX, TMIN, and TDEW
     df["T2M_MAX"] = df["T2M_MAX"] - 273.15
@@ -186,7 +186,7 @@ def nasachirps(in_file, nasap_file, chirps_file, out_dir, NASAP_ID = "nasapid", 
 
             for index, row in NASAPval.iterrows():
                 DATE = row['time2']
-                SRAD = round(row['ALLSKY_SFC_SW_DWN'], 1)
+                SRAD = round(row['WS10M'], 1)
                 TMAX = round(row['T2M_MAX'], 1)
                 TMIN = round(row['T2M_MIN'], 1)
                 RHUM = round(row['RH2M'], 1)

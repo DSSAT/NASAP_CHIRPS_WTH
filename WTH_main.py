@@ -16,12 +16,12 @@ from CHIRPS import chirps
 from DSSAT_WTH import nasachirps
 import os
 
-in_file = "C:/Work/Test/XYpoints.csv"
+in_file = "/Users/thiagoferreira53/Projects/NASAP_WTH/Test_input/XYpoints.csv"
 ID = "ID"
 NASAP_ID = "nasapid"
-in_chirps = "C:/Work/Test/in_chirps"
+in_chirps = "/Users/thiagoferreira53/Projects/NASAP_WTH/Test_input/in_chirps"
 sy, sm, sd, ey, em, ed = [2020, 10, 29, 2020, 10, 31]
-out_dir = "C:/Work/Test/Output"
+out_dir = "/Users/thiagoferreira53/Projects/NASAP_WTH/Test_input/Output"
 
 if __name__=='__main__':
     if not os.path.exists(out_dir):

@@ -38,13 +38,13 @@ def DataRequest(Collection):
 
 def nasap_point(ycoord, xcoord, sy, sm, sd, ey, em, ed):
     List = [
-        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_801_daily_t2mdew_lst.nc", "T2MDEW"),
-        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_801_daily_t2m_lst.nc", "T2M_MIN"),
-        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_801_daily_t2m_lst.nc", "T2M_MAX"),
-        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_801_daily_rh2m_lst.nc", "RH2M"),
-        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_801_daily_prectotcorr_lst.nc", "PRECTOTCORR"),
-        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_801_daily_ws2m_lst.nc", "WS2M"),
-        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_801_daily_allsky_sfc_sw_dwn_lst.nc", "ALLSKY_SFC_SW_DWN"),
+        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_901_daily_20210501_merra2_lst.nc", "T2MDEW"),
+        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_901_daily_20210501_merra2_lst.nc", "T2M_MIN"),
+        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_901_daily_20210501_merra2_lst.nc", "T2M_MAX"),
+        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_901_daily_20210501_merra2_lst.nc", "RH2M"),
+        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_901_daily_20210501_merra2_lst.nc", "PRECTOTCORR"),
+        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_901_daily_20210501_merra2_lst.nc", "WS2M"),
+        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_901_daily_20210501_merra2_lst.nc", "WS10M")
     ]
 
     Latitude = np.array([ycoord])
