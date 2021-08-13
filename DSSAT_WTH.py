@@ -121,12 +121,13 @@ def qc(input_dir, out_dir):
 def nasaconv(df):
 
     # Conversion units [W.m-2] to [MJ.m-2.day-1].   SRAD
-    df["WS10M"] = df["WS10M"] * 86400 / 1000000
+    df["ALLSKY_SFC_SW_DWN"] = df["ALLSKY_SFC_SW_DWN"] * 86400 / 1000000
 
     # Conversion units [K] to [C].   TMAX, TMIN, and TDEW
-    df["T2M_MAX"] = df["T2M_MAX"] - 273.15
-    df["T2M_MIN"] = df["T2M_MIN"] - 273.15
-    df["T2MDEW"] = df["T2MDEW"] - 273.15
+    # 08/13/2021 TF - K conversions not needed anymore
+    #df["T2M_MAX"] = df["T2M_MAX"] - 273.15  
+    #df["T2M_MIN"] = df["T2M_MIN"] - 273.15
+    #df["T2MDEW"] = df["T2MDEW"] - 273.15
 
     # Conversion units [kg.m-2.s-1] to [mm].   RAIN
     df["PRECTOTCORR"] = 86400 * df["PRECTOTCORR"]
@@ -186,7 +187,7 @@ def nasachirps(in_file, nasap_file, chirps_file, out_dir, NASAP_ID = "nasapid", 
 
             for index, row in NASAPval.iterrows():
                 DATE = row['time2']
-                SRAD = round(row['WS10M'], 1)
+                SRAD = round(row['ALLSKY_SFC_SW_DWN'], 1)
                 TMAX = round(row['T2M_MAX'], 1)
                 TMIN = round(row['T2M_MIN'], 1)
                 RHUM = round(row['RH2M'], 1)

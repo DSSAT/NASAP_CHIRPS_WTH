@@ -7,6 +7,7 @@
 #               Range_Days, DataRequest, and nasap_point functions were adapted
 #               from the original version provided by the NASAPOWER developers team.
 # Created:     06/04/2020
+# Updates:     08/13/2021 TF - Updated NASAP request function to work using NASAP API
 # Runs in Python 3.8.5
 # Example:
 #Columns of the CSV file:
@@ -22,47 +23,53 @@ import pandas as pd
 import xarray as xr
 import numpy as np
 import joblib
-from datetime import datetime
+import requests
 import urllib.request
 
-def Range_Days(Start_Date, End_Date):
-    Days = []
-    for each in range((End_Date - Start_Date).days + 1):
-        Days.append(Start_Date + timedelta(days=each))
-    return Days
+#def Range_Days(Start_Date, End_Date):
+#    Days = []
+#    for each in range((End_Date - Start_Date).days + 1):
+#        Days.append(Start_Date + timedelta(days=each))
+#    return Days
 
-def DataRequest(Collection):
-    URL, Parameter, Latitude, Longitude, Times = Collection
-    df = xr.open_dataset(URL).sel(lon=Longitude, lat=Latitude, time=Times, method='nearest')[Parameter]
-    return df
+#def DataRequest(Collection):
+#    URL, Parameter, Latitude, Longitude, Times = Collection
+#    df = xr.open_dataset(URL).sel(lon=Longitude, lat=Latitude, time=Times, method='nearest')[Parameter]
+#    return df
 
+# 08/13/2021 TF - Updated nasap_point function to request data using NASAP API
 def nasap_point(ycoord, xcoord, sy, sm, sd, ey, em, ed):
-    List = [
-        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_901_daily_20210501_merra2_lst.nc", "T2MDEW"),
-        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_901_daily_20210501_merra2_lst.nc", "T2M_MIN"),
-        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_901_daily_20210501_merra2_lst.nc", "T2M_MAX"),
-        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_901_daily_20210501_merra2_lst.nc", "RH2M"),
-        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_901_daily_20210501_merra2_lst.nc", "PRECTOTCORR"),
-        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_901_daily_20210501_merra2_lst.nc", "WS2M"),
-        ("https://opendap.larc.nasa.gov/opendap/hyrax/POWER/daily/power_901_daily_20210501_merra2_lst.nc", "WS10M")
-    ]
+    headers = {
+        'accept': 'application/json',
+    }
 
-    Latitude = np.array([ycoord])
-    Longitude = np.array([xcoord])
-    Times = Range_Days(datetime(sy, sm, sd), datetime(ey, em, ed))
-    pool = ThreadPoolExecutor(None)
+    params = (
+        ('start', str(sy)+str(sm)+str(sd)),
+        ('end', str(ey)+str(em)+str(ed)),
+        ('latitude', str(ycoord)),
+        ('longitude', str(xcoord)),
+        ('community', 'ag'),
+        ('parameters', 'T2MDEW,T2M_MIN,T2M_MAX,RH2M,PRECTOTCORR,WS2M,ALLSKY_SFC_SW_DWN'),
+        ('format', 'netcdf'),
+        ('header', 'true'),
+        ('time-standard', 'lst'),
+    )
+    #print("Submitting request ...")
+    response = requests.get('https://power.larc.nasa.gov/api/temporal/daily/point', headers=headers, params=params)
+    #print("Recieved API response ...")
 
-    Futures = []
-    for URL, Parameter in List:
-        Collection = (URL, Parameter, Latitude, Longitude, Times)
-        Futures.append(pool.submit(DataRequest, Collection))
+    nc4_ds = netCDF4.Dataset('daily_nasap', memory=response.content)
+    store = xr.backends.NetCDF4DataStore(nc4_ds)
+    df = xr.open_dataset(store)
 
-    wait(Futures);
-    df = xr.merge([Future.result() for Future in Futures])
     df1 = df.to_dataframe()
     df2 = df1.reset_index()
     ylat = df2.loc[0,"lat"]
     xlon = df2.loc[0,"lon"]
+
+    #print('************************************')
+    #print(df2)
+    #print('************************************')
 
     return df2, ylat, xlon
 
