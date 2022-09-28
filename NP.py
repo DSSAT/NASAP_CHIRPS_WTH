@@ -75,6 +75,9 @@ def nasap_point(ycoord, xcoord, sy, sm, sd, ey, em, ed, rformat):
         df2 = pd.DataFrame.from_dict(df1, orient='columns')
         df2['time'] = df2.index
         df2['time'] = pd.to_datetime(df2['time'])
+    else:
+        print("The format", rformat, "is not available. Please inform a valid data format (json or netcdf).")
+        exit()
 
     return df2, ylat, xlon
 
