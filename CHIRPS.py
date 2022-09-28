@@ -8,7 +8,7 @@
 # Runs in Python 3.8.5
 # Example:
 # chirps(in_chirps, in_file, out_dir, ID = "ID")
-# chirps("C:/Work/Test/in_chirps", "C:/Work/Test/XYpoints.csv", "C:/Work/Test/Output")
+# chirps("C:\\Work\\Test\\in_chirps", "C:\\Work\\Test\\XYpoints.csv", "C:\\Work\\Test\\Output")
 #-------------------------------------------------------------------------------
 
 import os

@@ -8,12 +8,13 @@
 #               from the original version provided by the NASAPOWER developers team.
 # Created:     06/04/2020
 # Updates:     08/13/2021 TF - Updated NASAP request function to work using NASAP API
+#              10/28/2022 TF - Added option to download NASAP data as a json file
 # Runs in Python 3.8.5
 # Example:
 #Columns of the CSV file:
 #ID,Latitude,Longitude, nasapid, LatNP, LonNP
 #nasap_gen(in_file, out_dir, sy, sm, sd, ey, em, ed, NASAP_ID = "nasapid")
-#nasap_gen("C:/Work/Test/XYpoints.csv", "C:/Work/Test/Output", 2020, 10, 29, 2020, 10, 31)
+#nasap_gen("C:\\Work\\Test\\XYpoints.csv", "C:\\Work\\Test\\Output", 2020, 10, 29, 2020, 10, 31)
 #-------------------------------------------------------------------------------
 
 from concurrent.futures import ThreadPoolExecutor, wait

@@ -9,7 +9,7 @@
 # Runs in Python 3.8.5
 # Example:
 # nasachirps(in_file, nasap_file, chirps_file, out_dir, NASAP_ID = "nasapid", ID = "ID")
-# nasachirps("C:/Work/Test/XYpoints.csv", "C:/Work/Test/Output/dfNASAP.pkl", "C:/Work/Test/Output/dfCHIRPS.pkl", "C:/Work/Test/Output")
+# nasachirps("C:\\Work\\Test\\XYpoints.csv", "C:\\Work\\Test\\Output\\dfNASAP.pkl", "C:\\Work\\Test\\Output\\dfCHIRPS.pkl", "C:\\Work\\Test\\Output")
 #-------------------------------------------------------------------------------
 
 import os

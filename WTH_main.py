@@ -16,12 +16,12 @@ from CHIRPS import chirps
 from DSSAT_WTH import nasachirps
 import os
 
-in_file = "/Users/thiagoferreira53/Projects/NASAP_WTH/Test_input/XYpoints.csv"
+in_file = "/User/path/to/XYpoints.csv"
 ID = "ID"
 NASAP_ID = "nasapid"
-in_chirps = "/Users/thiagoferreira53/Projects/NASAP_WTH/Test_input/in_chirps"
+in_chirps = "/User/path/to/in_chirps"
 sy, sm, sd, ey, em, ed = [2020, 10, 29, 2020, 10, 31]
-out_dir = "/Users/thiagoferreira53/Projects/NASAP_WTH/Test_input/Output"
+out_dir = "/User/path/to/Output"
 rformat = "json"
 
 if __name__=='__main__':
