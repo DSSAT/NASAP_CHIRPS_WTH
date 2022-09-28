@@ -38,7 +38,7 @@ import urllib.request
 #    return df
 
 # 08/13/2021 TF - Updated nasap_point function to request data using NASAP API
-def nasap_point(ycoord, xcoord, sy, sm, sd, ey, em, ed):
+def nasap_point(ycoord, xcoord, sy, sm, sd, ey, em, ed, rformat):
     headers = {
         'accept': 'application/json',
     }
@@ -50,30 +50,35 @@ def nasap_point(ycoord, xcoord, sy, sm, sd, ey, em, ed):
         ('longitude', str(xcoord)),
         ('community', 'ag'),
         ('parameters', 'T2MDEW,T2M_MIN,T2M_MAX,RH2M,PRECTOTCORR,WS2M,ALLSKY_SFC_SW_DWN'),
-        ('format', 'netcdf'),
+        ('format', rformat),
         ('header', 'true'),
         ('time-standard', 'lst'),
     )
     #print("Submitting request ...")
     response = requests.get('https://power.larc.nasa.gov/api/temporal/daily/point', headers=headers, params=params)
     #print("Recieved API response ...")
+    
+    if(rformat =='netcdf'):
+        nc4_ds = netCDF4.Dataset('daily_nasap', memory=response.content)
+        store = xr.backends.NetCDF4DataStore(nc4_ds)
+        df = xr.open_dataset(store)
 
-    nc4_ds = netCDF4.Dataset('daily_nasap', memory=response.content)
-    store = xr.backends.NetCDF4DataStore(nc4_ds)
-    df = xr.open_dataset(store)
-
-    df1 = df.to_dataframe()
-    df2 = df1.reset_index()
-    ylat = df2.loc[0,"lat"]
-    xlon = df2.loc[0,"lon"]
-
-    #print('************************************')
-    #print(df2)
-    #print('************************************')
+        df1 = df.to_dataframe()
+        df2 = df1.reset_index()
+        ylat = df2.loc[0,"lat"]
+        xlon = df2.loc[0,"lon"]
+    elif(rformat=='json'):
+        df = response.json()
+        ylat = df['geometry']['coordinates'][1]
+        xlon = df['geometry']['coordinates'][0]
+        df1 = df['properties']['parameter']
+        df2 = pd.DataFrame.from_dict(df1, orient='columns')
+        df2['time'] = df2.index
+        df2['time'] = pd.to_datetime(df2['time'])
 
     return df2, ylat, xlon
 
-def nasap_gen(in_file, out_dir, sy, sm, sd, ey, em, ed, NASAP_ID = "nasapid"):
+def nasap_gen(in_file, out_dir, sy, sm, sd, ey, em, ed, rformat, NASAP_ID = "nasapid"):
 
     ndays = (datetime(ey, em, ed) - datetime(sy, sm, sd)).days + 1
     df_out = out_dir + "/dfNASAP.pkl"
@@ -90,7 +95,7 @@ def nasap_gen(in_file, out_dir, sy, sm, sd, ey, em, ed, NASAP_ID = "nasapid"):
         Id = pt.loc[NASAP_ID].astype(int)
         lat = pt.loc["LatNP"]
         lon = pt.loc["LonNP"]
-        df, y, x = nasap_point(lat, lon, sy, sm, sd, ey, em, ed)
+        df, y, x = nasap_point(lat, lon, sy, sm, sd, ey, em, ed, rformat)
         id_vec = [Id] * ndays
         df.insert(loc=0, column=NASAP_ID, value=id_vec)
         df.to_csv(out_dir + "/" + "{}.txt".format(Id), index=False, sep='\t')
@@ -100,7 +105,7 @@ def nasap_gen(in_file, out_dir, sy, sm, sd, ey, em, ed, NASAP_ID = "nasapid"):
         lon = pt.loc[:,"LonNP"]
 
         for n, i, j in zip(Id, lat, lon):
-            df, y, x = nasap_point(i, j, sy, sm, sd, ey, em, ed)
+            df, y, x = nasap_point(i, j, sy, sm, sd, ey, em, ed, rformat)
             id_vec = [n] * ndays
             df.insert(loc=0, column='ID', value=id_vec)
             df1.append(df)

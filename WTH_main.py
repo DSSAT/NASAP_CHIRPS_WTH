@@ -22,11 +22,12 @@ NASAP_ID = "nasapid"
 in_chirps = "/Users/thiagoferreira53/Projects/NASAP_WTH/Test_input/in_chirps"
 sy, sm, sd, ey, em, ed = [2020, 10, 29, 2020, 10, 31]
 out_dir = "/Users/thiagoferreira53/Projects/NASAP_WTH/Test_input/Output"
+rformat = "json"
 
 if __name__=='__main__':
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
-    p1 = Process(target=nasap_gen, args=(in_file, out_dir, sy, sm, sd, ey, em, ed))
+    p1 = Process(target=nasap_gen, args=(in_file, out_dir, sy, sm, sd, ey, em, ed, rformat))
     p1.start()
     p2 = Process(target=chirps, args=(in_chirps, in_file, out_dir, ID))
     p2.start()

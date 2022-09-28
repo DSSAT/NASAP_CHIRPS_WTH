@@ -120,20 +120,22 @@ def qc(input_dir, out_dir):
 
 def nasaconv(df):
 
+    # Conversion units [m.s-1] to [km.day-1].   WIND
+    df["WS2M"] = 86.4 * df["WS2M"]
+    
+    #Conversions not required anymore
+
     # Conversion units [W.m-2] to [MJ.m-2.day-1].   SRAD
-    df["ALLSKY_SFC_SW_DWN"] = df["ALLSKY_SFC_SW_DWN"] * 86400 / 1000000
+    #df["ALLSKY_SFC_SW_DWN"] = df["ALLSKY_SFC_SW_DWN"] * 86400 / 1000000
 
     # Conversion units [K] to [C].   TMAX, TMIN, and TDEW
-    # 08/13/2021 TF - K conversions not needed anymore
     #df["T2M_MAX"] = df["T2M_MAX"] - 273.15  
     #df["T2M_MIN"] = df["T2M_MIN"] - 273.15
     #df["T2MDEW"] = df["T2MDEW"] - 273.15
 
     # Conversion units [kg.m-2.s-1] to [mm].   RAIN
-    df["PRECTOTCORR"] = 86400 * df["PRECTOTCORR"]
+    #df["PRECTOTCORR"] = 86400 * df["PRECTOTCORR"]
 
-    # Conversion units [m.s-1] to [km.day-1].   WIND
-    df["WS2M"] = 86.4 * df["WS2M"]
 
     nasaptime = []
     for i in df["time"]:
@@ -171,7 +173,8 @@ def nasachirps(in_file, nasap_file, chirps_file, out_dir, NASAP_ID = "nasapid", 
         NASAPval = df2.loc[(df2[ID] == npid)]
 
         tavg1 = (NASAPval['T2M_MIN'] + NASAPval['T2M_MAX']) / 2
-        NASAPval.insert(loc=12, column='tavg', value=tavg1)
+        #TF number of columns change according to the format of NASAP data (json/netcdf)
+        NASAPval.insert(loc=len(NASAPval.columns), column='tavg', value=tavg1)
 
         dfmonthly = NASAPval.resample('M', on='time').mean()
         TAV = round(dfmonthly["tavg"].mean(), 1)
@@ -194,6 +197,10 @@ def nasachirps(in_file, nasap_file, chirps_file, out_dir, NASAP_ID = "nasapid", 
                 WIND = round(row['WS2M'], 1)
                 TDEW = round(row['T2MDEW'], 1)
 
+                #Added to handle missing data/negative values
+                if SRAD < 0:
+                    SRAD = -99
+            
                 dat = datetime.fromtimestamp(datetime.timestamp(row['time'])).date().strftime('%Y%m%d')
 
                 if dat in d:
