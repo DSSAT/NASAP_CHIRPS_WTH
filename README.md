@@ -1,21 +1,36 @@
-# NASAP_CHIRPS_WTH
-Routines to download weather data from the NASA POWER application and merge with CHIRPS dataset to produce WTH files. WTH files are the native format input for DSSAT.
+# nasapchirps_dssat - Version 2
+Application to download weather data from the NASA POWER API version 2 and merge with CHIRPS dataset to produce WTH files. WTH files are the native format input for DSSAT.
 
-These routines are intended to download weather data from the NASA POWER application using OPeNDAP (NP.py),
-and then merge the NASA POWER data with CHIRPS data in a DSSAT output format (DSSAT_WTH.py).
-See "Test_input.zip" for an example of input files (CHIRPS files are not included).
+There are two modes of using this tool. 
 
-Inputs:
-1. A CSV file (.CSV) with the following columns: "ID", "Latitude", "Longitude", "nasapid", "LatNP", and "LonNP"
-2. A directory with the CHIRPS files.
+“get” is to fetch weather data based on a set of georeferenced points and a range of dates.
 
-Outputs:
-1. "DSSAT0" directory: WTH files without quality control for missing values.
-2. "DSSAT" directory: WTH files with quality control.
-3. "dfNASAP.pkl": Python dataframe with the NASA POWER data.
-4. "dfCHIRPS.pkl": Python dataframe with the CHIRPS data.
-5. "XY_Points.shp" dataset: Point-vector file of the input CSV file.
+ “update” is to fetch weather data based on a directory of WTH files that the user wants to update up to the most recent available.
 
-How to run:
-Create and configure the input files and directories in the "WTH_main.py" file and then run it.
-Application runs on Python 3.8.5 version. It is tested in Windows OS environment.
+Inputs for “get” option:
+
+in_file: A CSV file (.CSV) with the following columns: "ID", "Latitude", "Longitude", "nasapid", "LatNP", and "LonNP". If you want to use our 5-arc minute global grid (shapefile and CSV) file, please contact us. 
+
+startDate: Start date with format YYYYMMDD (e.g. 19841224)
+
+endDate: End date with format YYYYMMDD (e.g. 19841231)
+
+out_dir: Path of output directory for the new WTH files.
+
+Inputs for “update” option:
+
+in_file: A CSV file (.CSV) with the following columns: "ID", "Latitude", "Longitude", "nasapid", "LatNP", and "LonNP". If you want to use our 5-arc minute global grid (shapefile and CSV) file, please contact us.
+
+in_dir: Path directory of current WTH files to update.
+
+out_dir: Path of output directory for the new WTH files.
+
+How to run: Application is tested on Python 3.8.5 version and Linux environment.
+
+python nasapchirps_dssat {get, update} argument1, argument2, …
+
+python get in_file, startDate, endDate, out_dir
+
+python update in_file, in_dir, out_dir
+
+Note: For running on Windows OS systems, you may need to replace “/” by “\\” in the scripts.
