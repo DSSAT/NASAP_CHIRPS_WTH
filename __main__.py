@@ -8,7 +8,7 @@
 
 import sys
 import argparse
-from dssat_wth import dssat_wth
+from DSSAT_WTH import dssat_wth
 from update_wth import update_wth
 
 def main():
