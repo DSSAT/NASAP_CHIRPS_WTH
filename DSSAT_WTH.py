@@ -11,7 +11,7 @@ import argparse
 import shutil
 import pandas as pd
 from datetime import datetime, date, timedelta
-from chirps import *
+from CHIRPS import *
 import joblib
 from getnasap import nasa, nasachirps
 

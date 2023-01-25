@@ -7,7 +7,7 @@
 #######################################
 
 import os, sys
-from osgeo import ogr, gdal
+from osgeo import gdal
 from osgeo.gdalconst import *
 import numpy
 import pandas as pd
