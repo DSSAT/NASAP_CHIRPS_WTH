@@ -11,9 +11,9 @@ import argparse
 import shutil
 import pandas as pd
 from datetime import datetime, date, timedelta
-from chirps import *
+from .CHIRPS import *
 import joblib
-from getnasap import nasa, nasachirps
+from .getnasap import nasa, nasachirps
 
 def dssat_wth(in_file, startDate, endDate, out_dir):
     s1 = datetime.now()

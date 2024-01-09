@@ -11,9 +11,9 @@ import argparse
 import shutil
 import pandas as pd
 from datetime import datetime, date, timedelta
-from chirps import *
+from .CHIRPS import *
 import joblib
-from getnasap import nasa, nasachirps
+from .getnasap import nasa, nasachirps
 
 #Select requested (.WTH) files from historical repository and copy them to a new folder.
 def sel_wthfiles(in_file, in_dir, outdir_hist):
