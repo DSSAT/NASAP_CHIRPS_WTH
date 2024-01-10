@@ -95,7 +95,7 @@ def check_files(user_input, nasa_outdir):
         return False
 
 #Function to check that all NASAPOWER files requested are downloaded.
-def get_data2(user_input, cf):
+def get_data2(user_input, cf, startDate, endDate, nasa_outdir):
 
     if cf[2] < cf[1]:
         print(cf[1] - cf[2], "missing file(s):", cf[0])
@@ -121,7 +121,7 @@ def nasa(user_input, startDate, endDate, nasa_outdir):
     get_data(user_input, startDate, endDate, nasa_outdir)
     cf = check_files(user_input, nasa_outdir) #To check that all files requested were downloaded.
     if cf:
-        get_data2(user_input, cf)
+        get_data2(user_input, cf, startDate, endDate, nasa_outdir)
         if check_files(user_input, nasa_outdir):
             print('Program terminated. Please check manually NASAPOWER server response.')
             sys.exit(1)
