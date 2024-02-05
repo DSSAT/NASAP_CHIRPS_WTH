@@ -1,0 +1,16 @@
+$WEATHER DATA: NASA
+
+! T2M     Temperature at 2 Meters (C) 
+! TMIN     Temperature at 2 Meters Minimum (C) 
+! TMAX     Temperature at 2 Meters Maximum (C) 
+! TDEW     Dew/Frost Point at 2 Meters (C) 
+! RH2M     Relative Humidity at 2 Meters (%) 
+! RAIN     Precipitation Corrected (mm/day) 
+! WIND     Wind Speed at 2 Meters (m/s) 
+! SRAD     All Sky Surface Shortwave Downward Irradiance (MJ/m^2/day) 
+! Mean elevation for source NASA/POWER data tile (0.5 x 0.625 grid cell) = 243.26m
+
+@ INSI   WTHLAT  WTHLONG   WELEV   TAV  AMP  REFHT  WNDHT
+  NASA     14.2     1.45  243.26   nan    .      2      2
+
+@  DATE     T2M    TMIN    TMAX    TDEW    RH2M    RAIN    WIND    SRAD
